@@ -1,0 +1,42 @@
+name: Build Tugas 4 EXE
+
+on:
+push:
+branches:
+- main
+workflow_dispatch:
+
+permissions:
+contents: read
+
+jobs:
+build:
+runs-on: windows-latest
+
+steps:
+  - name: Checkout Repository
+    uses: actions/checkout@v4
+
+  - name: Install MinGW
+    shell: pwsh
+    run: |
+      choco install mingw -y --no-progress
+      if ($LASTEXITCODE -ne 0) {
+        throw "Instalasi MinGW gagal"
+      }
+
+  - name: Compile C++ to EXE
+    shell: pwsh
+    run: |
+      g++ -std=c++17 -O2 tugas_4.cpp -o tugas_4.exe
+      if ($LASTEXITCODE -ne 0) {
+        throw "Kompilasi gagal"
+      }
+
+  - name: Upload EXE
+    uses: actions/upload-artifact@v4
+    with:
+      name: tugas-4-exe
+      path: tugas_4.exe
+      if-no-files-found: error
+      retention-days: 7
